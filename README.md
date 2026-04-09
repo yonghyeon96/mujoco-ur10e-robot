@@ -2,6 +2,8 @@
 
 This repository contains a MuJoCo-based robotics project built around the Universal Robots UR10e arm. It combines core robotics coursework topics such as forward kinematics, inverse kinematics, and velocity kinematics with visual simulation outputs, and extends them into a 3D Fruit Ninja-style robot interaction demo.
 
+<img src="output.gif" alt="Output GIF" width="420">
+
 ## Overview
 
 The project is organized around two main Jupyter notebooks:
