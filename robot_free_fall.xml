@@ -1,0 +1,194 @@
+
+<mujoco model="robot_free_fall">
+  <compiler angle="radian" meshdir="mujoco_menagerie/universal_robots_ur10e/assets" autolimits="true"/>
+  
+  <option integrator="implicitfast" timestep="0.002"/>
+  
+  <statistic center="0.4 0 0.4" extent="1.5"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="120" elevation="-20" offwidth="1280" offheight="720"/>
+  </visual>
+
+  <default>
+    <default class="ur10e">
+      <material specular="0.5" shininess="0.25"/>
+      <joint axis="0 1 0" range="-6.28319 6.28319" armature="0.1"/>
+      <default class="size4">
+        <joint damping="10"/>
+      </default>
+      <default class="size3">
+        <joint damping="5"/>
+        <default class="size3_limited">
+          <joint range="-3.1415 3.1415"/>
+        </default>
+      </default>
+      <default class="size2">
+        <joint damping="2"/>
+      </default>
+      <default class="visual">
+        <geom type="mesh" contype="0" conaffinity="0" group="2"/>
+      </default>
+      <default class="collision">
+        <geom type="capsule" group="3"/>
+        <default class="eef_collision">
+          <geom type="cylinder"/>
+        </default>
+      </default>
+      <site size="0.001" rgba="0.5 0.5 0.5 0.3" group="4"/>
+    </default>
+    <default class="fruit">
+      <geom type="sphere" size="0.05" mass="0.1" friction="0.5 0.5 0.5"/>
+    </default>
+  </default>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.1 0.15 0.3" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.15 0.2 0.25" rgb2="0.1 0.15 0.2"
+      markrgb="0.3 0.3 0.3" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+    
+    <!-- Robot meshes -->
+    <material class="ur10e" name="black" rgba="0.033 0.033 0.033 1"/>
+    <material class="ur10e" name="jointgray" rgba="0.278 0.278 0.278 1"/>
+    <material class="ur10e" name="linkgray" rgba="0.82 0.82 0.82 1"/>
+    <material class="ur10e" name="urblue" rgba="0.49 0.678 0.8 1"/>
+    
+    <mesh file="base_0.obj"/>
+    <mesh file="base_1.obj"/>
+    <mesh file="shoulder_0.obj"/>
+    <mesh file="shoulder_1.obj"/>
+    <mesh file="shoulder_2.obj"/>
+    <mesh file="upperarm_0.obj"/>
+    <mesh file="upperarm_1.obj"/>
+    <mesh file="upperarm_2.obj"/>
+    <mesh file="upperarm_3.obj"/>
+    <mesh file="forearm_0.obj"/>
+    <mesh file="forearm_1.obj"/>
+    <mesh file="forearm_2.obj"/>
+    <mesh file="forearm_3.obj"/>
+    <mesh file="wrist1_0.obj"/>
+    <mesh file="wrist1_1.obj"/>
+    <mesh file="wrist1_2.obj"/>
+    <mesh file="wrist2_0.obj"/>
+    <mesh file="wrist2_1.obj"/>
+    <mesh file="wrist2_2.obj"/>
+    <mesh file="wrist3.obj"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 3" dir="0 0 -1" directional="true" diffuse="0.8 0.8 0.8"/>
+    <light pos="2 2 2" dir="-1 -1 -1" diffuse="0.3 0.3 0.3"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+    
+    <!-- UR10e Robot -->
+    <body name="base" quat="0 0 0 -1" childclass="ur10e">
+      <inertial mass="4.0" pos="0 0 0" diaginertia="0.0061063308908 0.0061063308908 0.01125"/>
+      <geom mesh="base_0" material="black" class="visual"/>
+      <geom mesh="base_1" material="jointgray" class="visual"/>
+      <body name="shoulder_link" pos="0 0 0.181">
+        <inertial pos="0 0 0" mass="7.778" diaginertia="0.0314743 0.0314743 0.0218756"/>
+        <joint name="shoulder_pan_joint" class="size4" axis="0 0 1"/>
+        <geom mesh="shoulder_0" material="urblue" class="visual"/>
+        <geom mesh="shoulder_1" material="black" class="visual"/>
+        <geom mesh="shoulder_2" material="jointgray" class="visual"/>
+        <geom class="collision" size="0.078 0.08" pos="0 0 -0.05"/>
+        <body name="upper_arm_link" pos="0 0.176 0" quat="1 0 1 0">
+          <inertial pos="0 0 0.3065" mass="12.93" diaginertia="0.423074 0.423074 0.0363656"/>
+          <joint name="shoulder_lift_joint" class="size4"/>
+          <geom mesh="upperarm_0" material="black" class="visual"/>
+          <geom mesh="upperarm_1" material="jointgray" class="visual"/>
+          <geom mesh="upperarm_2" material="urblue" class="visual"/>
+          <geom mesh="upperarm_3" material="linkgray" class="visual"/>
+          <geom class="collision" pos="0 -0.05 0" quat="1 1 0 0" size="0.078 0.08"/>
+          <geom class="collision" size="0.06 0.3" pos="0 0 0.3"/>
+          <body name="forearm_link" pos="0 -0.137 0.613">
+            <inertial pos="0 0 0.2855" mass="3.87" diaginertia="0.11059 0.11059 0.0108844"/>
+            <joint name="elbow_joint" class="size3_limited"/>
+            <geom mesh="forearm_0" material="urblue" class="visual"/>
+            <geom mesh="forearm_1" material="black" class="visual"/>
+            <geom mesh="forearm_2" material="jointgray" class="visual"/>
+            <geom mesh="forearm_3" material="linkgray" class="visual"/>
+            <geom class="collision" pos="0 0.08 0" quat="1 1 0 0" size="0.058 0.065"/>
+            <geom class="collision" size="0.043 0.28" pos="0 0 0.29"/>
+            <body name="wrist_1_link" pos="0 0 0.571" quat="1 0 1 0">
+              <inertial pos="0 0.135 0" quat="0.5 0.5 -0.5 0.5" mass="1.96" diaginertia="0.0055125 0.00510825 0.00510825"/>
+              <joint name="wrist_1_joint" class="size2"/>
+              <geom mesh="wrist1_0" material="black" class="visual"/>
+              <geom mesh="wrist1_1" material="urblue" class="visual"/>
+              <geom mesh="wrist1_2" material="jointgray" class="visual"/>
+              <geom class="collision" pos="0 0.06 0" quat="1 1 0 0" size="0.05 0.07"/>
+              <body name="wrist_2_link" pos="0 0.135 0">
+                <inertial pos="0 0 0.12" quat="0.5 0.5 -0.5 0.5" mass="1.96" diaginertia="0.0055125 0.00510825 0.00510825"/>
+                <joint name="wrist_2_joint" axis="0 0 1" class="size2"/>
+                <geom mesh="wrist2_0" material="black" class="visual"/>
+                <geom mesh="wrist2_1" material="urblue" class="visual"/>
+                <geom mesh="wrist2_2" material="jointgray" class="visual"/>
+                <geom class="collision" size="0.046 0.065" pos="0 0 0.05"/>
+                <geom class="collision" pos="0 0.028 0.12" quat="1 1 0 0" size="0.046 0.043"/>
+                <body name="wrist_3_link" pos="0 0 0.12">
+                  <inertial pos="0 0.092 0" quat="0 1 -1 0" mass="0.202" diaginertia="0.000204525 0.000144346 0.000144346"/>
+                  <joint name="wrist_3_joint" class="size2"/>
+                  <geom material="linkgray" mesh="wrist3" class="visual"/>
+                  <geom class="eef_collision" pos="0 0.097 0" quat="1 1 0 0" size="0.046 0.02"/>
+                  <site name="eef_site" pos="0 0.15 0" size="0.02" rgba="1 0 0 0.3"/>
+                </body>
+              </body>
+            </body>
+          </body>
+        </body>
+      </body>
+    </body>
+    
+    <!-- Fruit balls -->
+    
+    <body name="fruit_0" pos="2.0 -2.0 0.5">
+      <freejoint name="fruit_0_joint"/>
+      <geom name="fruit_0_geom" class="fruit" rgba="0.9 0.1 0.1 1"/>
+    </body>
+    <body name="fruit_1" pos="2.5 -1.7 0.7">
+      <freejoint name="fruit_1_joint"/>
+      <geom name="fruit_1_geom" class="fruit" rgba="0.9 0.1 0.1 1"/>
+    </body>
+    <body name="fruit_2" pos="3.0 -1.4 0.9">
+      <freejoint name="fruit_2_joint"/>
+      <geom name="fruit_2_geom" class="fruit" rgba="0.9 0.1 0.1 1"/>
+    </body>
+    <body name="fruit_3" pos="3.5 -2.0 1.1">
+      <freejoint name="fruit_3_joint"/>
+      <geom name="fruit_3_geom" class="fruit" rgba="0.9 0.1 0.1 1"/>
+    </body>
+    <body name="fruit_4" pos="4.0 -1.7 1.3">
+      <freejoint name="fruit_4_joint"/>
+      <geom name="fruit_4_geom" class="fruit" rgba="0.9 0.1 0.1 1"/>
+    </body>
+    <body name="fruit_5" pos="4.5 -1.4 1.5">
+      <freejoint name="fruit_5_joint"/>
+      <geom name="fruit_5_geom" class="fruit" rgba="0.9 0.1 0.1 1"/>
+    </body>
+    <body name="fruit_6" pos="5.0 -2.0 1.7000000000000002">
+      <freejoint name="fruit_6_joint"/>
+      <geom name="fruit_6_geom" class="fruit" rgba="0.9 0.1 0.1 1"/>
+    </body>
+    <body name="fruit_7" pos="5.5 -1.7 1.9000000000000001">
+      <freejoint name="fruit_7_joint"/>
+      <geom name="fruit_7_geom" class="fruit" rgba="0.9 0.1 0.1 1"/>
+    </body>
+    
+  </worldbody>
+
+  <actuator>
+    <motor name="shoulder_pan" joint="shoulder_pan_joint" gear="1" ctrllimited="true" ctrlrange="-330 330"/>
+    <motor name="shoulder_lift" joint="shoulder_lift_joint" gear="1" ctrllimited="true" ctrlrange="-330 330"/>
+    <motor name="elbow" joint="elbow_joint" gear="1" ctrllimited="true" ctrlrange="-150 150"/>
+    <motor name="wrist_1" joint="wrist_1_joint" gear="1" ctrllimited="true" ctrlrange="-56 56"/>
+    <motor name="wrist_2" joint="wrist_2_joint" gear="1" ctrllimited="true" ctrlrange="-56 56"/>
+    <motor name="wrist_3" joint="wrist_3_joint" gear="1" ctrllimited="true" ctrlrange="-56 56"/>
+  </actuator>
+
+  <keyframe>
+    <key name="home" qpos="-1.5708 -1.5708 1.5708 -1.5708 -1.5708 0"/>
+  </keyframe>
+</mujoco>
